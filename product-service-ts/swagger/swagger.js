@@ -23,6 +23,23 @@
             "description": "200 response"
           }
         }
+      },
+      "post": {
+        "summary": "createProduct",
+        "description": "",
+        "operationId": "createProduct.post.products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        }
       }
     },
     "/products/{productId}": {
@@ -54,5 +71,5 @@
   },
   "definitions": {},
   "securityDefinitions": {},
-  "host": "kvk5koj7u5.execute-api.eu-west-1.amazonaws.com/dev"
+  "host": "d66do7j31i.execute-api.eu-west-1.amazonaws.com/dev"
 };
