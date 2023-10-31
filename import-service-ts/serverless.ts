@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript'
 
 import { importProductsFile } from '@functions/index'
 import importFileParser from '@functions/importFileParser'
+import { QUEUE_NAME } from 'src/const/const'
 
 const serverlessConfiguration: AWS = {
     service: 'import-service',
@@ -23,6 +24,7 @@ const serverlessConfiguration: AWS = {
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+            SQS_URL: `https://sqs.eu-west-1.amazonaws.com/454651963758/${QUEUE_NAME}`
         },
         iam: {
             role: {
@@ -35,6 +37,11 @@ const serverlessConfiguration: AWS = {
                             'arn:aws:s3:::epam-aws-training-import',
                         ],
                     },
+                    {
+                        Effect: 'Allow',
+                        Action: 'sqs:*',
+                        Resource: `arn:aws:sqs:eu-west-1:454651963758:${QUEUE_NAME}`,
+                      },
                 ],
             },
         },

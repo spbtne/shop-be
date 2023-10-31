@@ -1,7 +1,9 @@
+import catalogBatchProcess from '@functions/catalogBatchProcess'
 import createProduct from '@functions/createProduct'
 import getProductsById from '@functions/getProductsById'
 import getProductsList from '@functions/getProductsList'
 import type { AWS } from '@serverless/typescript'
+import { QUEUE_NAME, TOPIC } from 'src/const/constants'
 
 const serverlessConfiguration: AWS = {
     service: 'product-service',
@@ -22,9 +24,28 @@ const serverlessConfiguration: AWS = {
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
             PRODUCTS_TABLE: 'aws_course_products',
             PRODUCTS_STOCK_TABLE: 'aws_course_products_stock',
+            SNS_ARN: {
+                Ref: 'SnsTopic',
+            },
+        },
+        iam: {
+            role: {
+                statements: [
+                    {
+                        Effect: 'Allow',
+                        Action: 'dynamodb:*',
+                        Resource: `*`,
+                    },
+                    {
+                        Effect: 'Allow',
+                        Action: ['sns:*'],
+                        Resource: `arn:aws:sns:eu-west-1:*:${TOPIC}`,
+                    },
+                ],
+            },
         },
     },
-    functions: { getProductsList, getProductsById, createProduct },
+    functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess  },
     package: { individually: true },
     custom: {
         esbuild: {
@@ -73,6 +94,28 @@ const serverlessConfiguration: AWS = {
                     },
                 },
             },
+            SqsQueue: {
+                Type: 'AWS::SQS::Queue',
+                Properties: {
+                  QueueName: QUEUE_NAME,
+                },
+              },
+              SnsTopic: {
+                Type: 'AWS::SNS::Topic',
+                Properties: {
+                  TopicName: TOPIC,
+                },
+              },
+              SnsSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                  Endpoint: 'spbtne@gmail.com', // TODO: for testing
+                  Protocol: 'email',
+                  TopicArn: {
+                    Ref: 'SnsTopic',
+                  },
+                },
+              },
         },
     },
 }
