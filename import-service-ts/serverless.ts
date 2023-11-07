@@ -15,7 +15,7 @@ const serverlessConfiguration: AWS = {
         profile: 'instructor',
         stage: 'dev',
         httpApi: {
-          cors: true
+            cors: true,
         },
         apiGateway: {
             minimumCompressionSize: 1024,
@@ -24,7 +24,7 @@ const serverlessConfiguration: AWS = {
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-            SQS_URL: `https://sqs.eu-west-1.amazonaws.com/454651963758/${QUEUE_NAME}`
+            SQS_URL: `https://sqs.eu-west-1.amazonaws.com/454651963758/${QUEUE_NAME}`,
         },
         iam: {
             role: {
@@ -41,7 +41,7 @@ const serverlessConfiguration: AWS = {
                         Effect: 'Allow',
                         Action: 'sqs:*',
                         Resource: `arn:aws:sqs:eu-west-1:454651963758:${QUEUE_NAME}`,
-                      },
+                    },
                 ],
             },
         },
@@ -58,6 +58,25 @@ const serverlessConfiguration: AWS = {
             define: { 'require.resolve': undefined },
             platform: 'node',
             concurrency: 10,
+        },
+    },
+    resources: {
+        Resources: {
+            GatewayResponse: {
+                Type: 'AWS::ApiGateway::GatewayResponse',
+                Properties: {
+                    ResponseParameters: {
+                        'gatewayresponse.header.Access-Control-Allow-Origin':
+                            "'*'",
+                        'gatewayresponse.header.Access-Control-Allow-Headers':
+                            "'*'",
+                    },
+                    ResponseType: 'DEFAULT_4XX',
+                    RestApiId: {
+                        Ref: 'ApiGatewayRestApi',
+                    },
+                },
+            },
         },
     },
 }
